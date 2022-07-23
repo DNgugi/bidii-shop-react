@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import Header from "./components/Header";
 // import Footer from "./components/Footer";
@@ -12,8 +12,25 @@ import Checkout from "./pages/Checkout";
 import Confirmation from "./pages/Confirmation";
 import SignUp from "./pages/SignUp";
 import Thankyou from "./pages/Thankyou";
+import { useDispatch, useSelector } from "react-redux";
+import { calculateCartTotal } from "./slices/cartSlice";
+// import { selectUser, setUser } from "./slices/authSlice";
 
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
 function App() {
+  const cart = useSelector(calculateCartTotal);
+  // const user = useSelector(selectUser)
+  const dispatch = useDispatch();
+  
+  useEffect(() => {
+    dispatch(calculateCartTotal());
+  }, [cart, dispatch]);
+
+  //  useEffect(() => {
+  //    dispatch(setUser({username: 'Reactex', password: 'reactex'}));
+  //  }, [user, dispatch]);
+  
   return (
     <>
       <Header />
@@ -21,12 +38,28 @@ function App() {
         <Route path="/" element={<ShopOutlet />}>
           <Route index element={<Front />} />
           <Route path="signup" element={<SignUp />} />
+          <Route path="login" element={<Login />} />
+
           <Route path="shop" element={<ShopOutlet />}>
             <Route index element={<Shop />} />
             <Route path="cart" element={<ShopOutlet />}>
               <Route index element={<Cart />} />
-              <Route path="checkout" element={<ShopOutlet />}>
-                <Route index element={<Checkout />} />
+              <Route
+                path="checkout"
+                element={
+                  <ProtectedRoute>
+                    <ShopOutlet />
+                  </ProtectedRoute>
+                }
+              >
+                <Route
+                  index
+                  element={
+                    <ProtectedRoute>
+                      <Checkout />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route path="confirmation" element={<ShopOutlet />}>
                   <Route index element={<Confirmation />} />
                   <Route path="thankyou" element={<Thankyou />}></Route>

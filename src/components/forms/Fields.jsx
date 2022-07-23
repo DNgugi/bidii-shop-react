@@ -8,8 +8,17 @@ export const TextInput = ({ label, ...props }) => {
   const [field, meta] = useField(props);
   return (
     <div className="flex flex-col">
-      <label htmlFor={props.id || props.name}>{label}</label>
-      <input className="border-2" {...field} {...props} />
+      <label
+        className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+        htmlFor={props.id || props.name}
+      >
+        {label}
+      </label>
+      <input
+        className="appearance-none block w-full bg-gray-200 text-gray-700  rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+        {...field}
+        {...props}
+      />
       {meta.touched && meta.error ? (
         <div className="error">{meta.error}</div>
       ) : null}
@@ -40,13 +49,22 @@ export const Select = ({ label, ...props }) => {
   const [field, meta] = useField(props);
   return (
     <div>
-      <label htmlFor={props.id || props.name}>{label}</label>
-      <select {...field} {...props} />
+      <label
+        className="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2"
+        htmlFor={props.id || props.name}
+      >
+        {label}
+      </label>
+      <select
+        className="appearance-none block w-full bg-gray-200 text-gray-700  rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white"
+        {...field}
+        {...props}
+      >
+        {props.children}
+      </select>
       {meta.touched && meta.error ? (
         <div className="error">{meta.error}</div>
       ) : null}
     </div>
   );
 };
-
-

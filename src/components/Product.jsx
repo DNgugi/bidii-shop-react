@@ -1,12 +1,14 @@
 import React, { useRef } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { addToCart } from '../slices/cartSlice';
+import { addToCart, calculateCartTotal } from '../slices/cartSlice';
 
 function Product({ product }) {
   const prodRef = useRef();
   const dispatch = useDispatch();
   const handleAddToCart = (prod) => {
+        dispatch(calculateCartTotal());
+
     dispatch(addToCart(prod));
   };
   // const showBtn = () => {

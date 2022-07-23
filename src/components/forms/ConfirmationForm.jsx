@@ -12,7 +12,6 @@ const ConfirmationForm = ({ total }) => {
   // const dispatch = useDispatch();
   return (
     <>
-      <h1>Subscribe!</h1>
       <Formik
         initialValues={{
           confirmationCode: "",

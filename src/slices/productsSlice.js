@@ -1,23 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    items: [],
+    items: localStorage.getItem("productsList")
+    ? JSON.parse(localStorage.getItem("productsList"))
+    : [],
     status: null,
     error: null
 };
-
-export const fetchProducts = createAsyncThunk(
-    'products/fetchProducts',
-    async (
-        // userData = null, { rejectWithValue }
-    ) => {
-        // try {
-            const res = await axios.get('http://localhost/wordpress/wp-json/wc/v3/')
-        return res?.data
-        // } catch (error) {
-        //     return rejectWithValue('error in product fetch');
-        // }
-});
 
 export const productsSlice = createSlice({
   name: "products",
@@ -29,7 +18,8 @@ export const productsSlice = createSlice({
     },
     [fetchProducts.fulfilled]: (state, action) => {
         state.status = "success";
-        state.items = action.payload
+      state.items = action.payload
+      localStorage.setItem('productsList', JSON.stringify(state.items))
     },
     [fetchProducts.rejected]: (state, action) => {
         state.status = "failed";

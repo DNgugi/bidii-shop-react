@@ -1,69 +1,45 @@
-import React from "react";
-import { useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
-import CartProduct from "../components/CartProduct";
-import { selectCartItems } from "../slices/cartSlice";
-import ApplyCouponForm from "../components/forms/ApplyCouponForm";
+import React, { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { selectCartItems, calculateCartTotal } from "../slices/cartSlice";
+
+import Footer from "../components/Footer";
+import CartTable from "../components/CartTable";
+import CartSummary from "../components/CartSummary";
 
 function Cart() {
   const cart = useSelector(selectCartItems);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(calculateCartTotal());
+  }, [cart, dispatch]);
   return (
-    <div className="relative grid grid-cols-12 gap-2 col-span-full md:col-start-2 md:col-span-10 h-screen pt-2">
+    <main
+      id="main"
+      className="relative top-20 left-0 grid grid-cols-12 gap-2 overflow-y-scroll max-h-screen h-screen w-screen grid-rows-[50px_minmax(200px,_1fr)_50px]"
+    >
       <h1 className="text-2xl col-span-full text-center">Shopping Cart</h1>
       {cart.length === 0 ? (
-        <div className="empty-cart">
-          <p>Cart is empty</p>
-          <button onClick={() => navigate("/shop")}>Start shopping</button>
+        <div className="empty-cart col-span-full w-screen flex flex-col items-center justify-center">
+          <p className="text-2xl text-center">Oops! This cart is empty...</p>
+          <button
+            className="btn-primary mt-5"
+            onClick={() => navigate("/shop")}
+          >
+            Start shopping
+          </button>
         </div>
       ) : (
-        <div className="col-span-full grid grid-cols-12 gap-2 ">
-          <div className="table-titles grid grid-cols-12 gap-2 col-span-full border-solid border-b py-2">
-            <h3 className="col-start-1 col-span-4 flex justify-center">
-              Product
-            </h3>
-            <h3 className="col-start-auto col-span-2 flex justify-center">
-              Price
-            </h3>
-            <h3 className="col-start-auto col-span-3 flex justify-center">
-              Quantity
-            </h3>{" "}
-            <h3 className="col-start-auto col-span-2 flex justify-center">
-              Total
-            </h3>
-          </div>
-          <div className="table-items grid grid-cols-12 gap-2 col-span-full divide-y  h-60 overflow-y-scroll">
-            {cart?.map((product) => (
-              <div
-                key={product.id}
-                className="grid grid-cols-12 gap-2 col-span-full items-center p-4 m-2  "
-              >
-                <CartProduct product={product} />
-                <div className="col-start-auto col-span-2 flex justify-center">
-                  unit price here
-                </div>{" "}
-                <div className="col-start-auto col-span-3 flex justify-center">
-                  {product.cartQuantity}
-                </div>{" "}
-                <div className="col-start-auto col-span-2 flex justify-center">
-                  total here
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="col-span-full grid grid-cols-12 gap-2 col-span-full divide-x">
-            <div className="col-span-full md:col-span-6 p-4 m-2">
-              <ApplyCouponForm />
-            </div>
-            <div className="col-span-full md:col-span-6 p-4 m-2">
-              <h1 className="text-xl">Subtotal: Ksh. 99,300</h1>
-              <p className="text-base">Taxes and Delivery will be calculated at check out.</p>
-                <button onClick={ () => navigate('checkout')} className="btn-primary">Checkout</button>
-            </div>
+        <div id="cart" className="col-span-full">
+          <div className=" grid grid-cols-12 gap-x-4 px-4  ">
+            <CartTable />
+            <CartSummary />
           </div>
         </div>
       )}
-    </div>
+      <Footer />
+    </main>
   );
 }
 
