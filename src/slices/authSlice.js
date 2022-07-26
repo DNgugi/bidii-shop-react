@@ -3,29 +3,39 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   user: localStorage.getItem("user")
     ? JSON.parse(localStorage.getItem("user"))
-    : {},
-  token: localStorage.getItem("karyToken")
-    ? JSON.parse(localStorage.getItem("karyToken"))
-    : ""
+    : null,
+  token: localStorage.getItem("token")
+    ? JSON.parse(localStorage.getItem("token"))
+    : null,
+  refreshToken: localStorage.getItem("refreshToken")
+    ? JSON.parse(localStorage.getItem("refreshToken"))
+    : null,
 };
 
 export const authSlice = createSlice({
-    name: "auth",
-    initialState,
-    reducers: {
-        setUser: (state, action) => {
-            state.user = action.payload.user;
-        state.token = action.payload.token
-        
-        localStorage.setItem('user', JSON.stringify(state.user))
-        localStorage.setItem("karyToken", JSON.stringify(state.token));
-        },
-    }
-})
+  name: "auth",
+  initialState,
+  reducers: {
+    setCredentials: (state, action) => {
+      const { user, token, refreshToken } = action.payload;
+      state.user = user;
+      state.token = token;
+      state.refreshToken = refreshToken;
 
-export const { setUser } = authSlice.actions;
+      localStorage.setItem("user", JSON.stringify(state.user));
+      localStorage.setItem("token", JSON.stringify(state.token));
+      localStorage.setItem("refreshToken", JSON.stringify(state.refreshToken));
+    },
+    logOut: (state, action) => {
+      state.user = null;
+      state.token = null;
+    },
+  },
+});
 
-export const selectUser = (state) => state.auth.user;
-export const selectToken = (state) => state.auth.token;
+export const { setCredentials, logOut } = authSlice.actions;
 
+export const selectCurrentUser = (state) => state.auth.user;
+export const selectCurrentToken = (state) => state.auth.token;
+export const selectRefreshToken = (state) => state.auth.refreshToken;
 export default authSlice.reducer;

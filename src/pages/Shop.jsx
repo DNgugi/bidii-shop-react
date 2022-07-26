@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
-import { useGetAllProductsQuery } from "../api";
-// import { getCartTotal, selectCartItems } from "../slices/cartSlice";
+import { useGetAllProductsQuery } from "../features/api/authApi";
 import Products from "../components/Products";
 import ShopSidebar from "../components/ShopSidebar";
 import Footer from "../components/Footer";
 import { calculateCartTotal, selectCartItems } from "../slices/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
+// import {featured as data} from '../features/api/api'
 
 function Shop() {
   const toggleSidebar = () => {
@@ -21,20 +21,20 @@ function Shop() {
       classes.add("sm:col-span-8", "md:col-span-9");
     }
   };
-  const { data, error, isLoading } = useGetAllProductsQuery();
+
   const cart = useSelector(selectCartItems);
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(calculateCartTotal());
-  }, [cart, dispatch])
+  }, [cart, dispatch]);
+  
+  const { data: products, error, isLoading } = useGetAllProductsQuery();
+  
 
-  //pass id here, then to arg in query of api set up
-
-  //or use selector to access state from slice
   return (
     <main
       id="main"
-      className="relative top-20 left-0 grid grid-cols-12 gap-2 overflow-y-scroll max-h-screen h-screen w-screen grid-rows-[50px_minmax(200px,_1fr)_50px]"
+      className="relative top-20 left-0 grid grid-cols-12 gap-2 overflow-y-scroll min-h-screen w-screen grid-rows-[50px_minmax(200px,_1fr)_50px]"
     >
       <h1 className="text-2xl col-span-full text-center">Shop</h1>
       <button
@@ -52,14 +52,14 @@ function Shop() {
       </div>
       <div
         id="shop"
-        className="col-span-full sm:col-span-8 md:col-span-9 overflow-y-scroll grid grid-cols-12 h-screen p-4"
+        className="col-span-full sm:col-span-8 md:col-span-9 overflow-y-scroll grid grid-cols-12 min-h-screen p-4"
       >
         {isLoading ? (
           <p>Loading...</p>
         ) : error ? (
-          <p>Error</p>
+          <p>An error occured, please try again</p>
         ) : (
-          <Products products={data} />
+          <Products products={products} />
         )}
       </div>
       <Footer />

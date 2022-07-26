@@ -1,15 +1,11 @@
 import React from "react";
-import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectCartTotal } from "../slices/cartSlice";
 import CurrencyFormat from "react-currency-format";
-import { prices } from "../api";
-// import { useFormikContext } from "formik";
+import { prices } from "../features/api/api";
 
 function CheckoutSummary() {
   const cartTotal = useSelector(selectCartTotal);
-  const navigate = useNavigate();
-  // const { values, submitForm } = useFormikContext();
   const handlePlaceOrder = () => {
     alert("submitted");
   };

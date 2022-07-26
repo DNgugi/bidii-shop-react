@@ -1,18 +1,50 @@
-import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react"
+import { createApi } from "@reduxjs/toolkit/query/react";
+// Define our single API slice object
 
-export const productsApi = createApi({
-  reducerPath: "productsApi",
-  baseQuery: fetchBaseQuery({
-    baseUrl: "http://karyhealthproducts.com/wp-json/wc/store/",
-  }),
-  endpoints: (builder) => ({
-    getAllProducts: builder.query({
-      query: () => `products`,
-    }),
-  }),
+import { graphqlRequestBaseQuery } from "@rtk-query/graphql-request-base-query";
+
+
+const apiBaseQuery = graphqlRequestBaseQuery({
+    url: "https://karyhealthproducts.com/graphql",
+    credentials: 'include',
+
+    prepareHeaders: (headers, { getState }) => {
+      headers.set("Content-Type", "application/json");
+      const token = getState().auth.token;
+      if (token) {
+        headers.set("Authorization", `Bearer ${token}`);
+      }
+      return headers;
+    },
+    
+})
+const apiBaseQueryWithReauth = async (args, api, extraOptions) => {
+  let result = await apiBaseQuery(args, api, extraOptions);
+
+  if (result?.error?.orginalStatus === 403 || result?.error?.orginalStatus === 401) {
+    console.log('sending refresh token')
+    const refreshResult = await apiBaseQuery(api.refreshToken(api.getState().auth.refreshToken), api, extraOptions);
+
+    console.log(refreshResult);
+    if (refreshResult?.data) {
+      const user = api.getState().auth
+      api.dispatch(api.setCredentials({ ...refreshResult.data, user }))
+      result = await apiBaseQuery(args, api, extraOptions);
+    } else {
+      api.dispatch(api.logout());
+    }
+  } 
+  return result;
+  }
+
+export const apiSlice = createApi({
+  // reducerPath: "apiSlice",
+  baseQuery: apiBaseQueryWithReauth,
+  endpoints: builder => ({})
+ 
 });
-export const { useGetAllProductsQuery } = productsApi
 
+// useRegisterUserMutation, useCreateOrderMutation
 
 export const counties = [
   {
@@ -575,15 +607,13 @@ export const counties = [
     sub_counties: ["Central Pokot", "North Pokot", "Pokot South", "West Pokot"],
   },
 ];
-export const  prices =  {
-      
-      
-      currency_symbol: "KSh",
-      currency_decimal_separator: ".",
-      currency_thousand_separator: ",",
-      currency_prefix: "KSh ",
-      currency_suffix: "",
-    }
+export const prices = {
+  currency_symbol: "KSh",
+  currency_decimal_separator: ".",
+  currency_thousand_separator: ",",
+  currency_prefix: "KSh ",
+  currency_suffix: "",
+};
 export const featured = [
   {
     id: 1849,
@@ -858,4 +888,3 @@ export const featured = [
     },
   },
 ];
-

@@ -14,7 +14,7 @@ function CartProduct({product}) {
       key={product.id}
       className="col-start-1 col-span-4 flex flex-col items-center justify-center"
     >
-        <img src={product.images.map((img) => img.thumbnail)} alt="" width={100} height={100} />
+        {/* <img src={product.images[0].thumbnail} alt="" width={100} height={100} /> */}
       <h3 className="text-xl text-dark mt-2 mb-2">{product.name}</h3>
       <button
         onClick={() => {

@@ -4,7 +4,6 @@ import Footer from "../components/Footer";
 import { selectCartItemCount } from "../slices/cartSlice";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import CheckoutSummary from "../components/CheckoutSummary";
 
 function Checkout() {
   const cartItems = useSelector(selectCartItemCount);

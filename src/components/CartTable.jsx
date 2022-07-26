@@ -7,6 +7,7 @@ import {
 } from "../slices/cartSlice";
 import CartProduct from "./CartProduct";
 import CurrencyFormat from "react-currency-format";
+import { prices } from "../features/api/api";
 
 function CartTable() {
   const dispatch = useDispatch();
@@ -38,11 +39,11 @@ function CartTable() {
             <div className="col-start-auto col-span-2 flex justify-center">
               <div className="max-w-full">
                 <CurrencyFormat
-                  thousandSeparator={product.prices.currency_thousand_separator}
-                  decimalSeparator={product.prices.currency_decimal_separator}
-                  prefix={product.prices.currency_prefix}
-                  suffix={product.prices.currency_suffix}
-                  value={product.prices.price / 100}
+                  thousandSeparator={prices.currency_thousand_separator}
+                  decimalSeparator={prices.currency_decimal_separator}
+                  prefix={prices.currency_prefix}
+                  suffix={prices.currency_suffix}
+                  value={1000}
                   displayType="text"
                 />
               </div>
@@ -64,11 +65,11 @@ function CartTable() {
             </div>{" "}
             <div className="col-start-auto col-span-2 flex justify-center">
               <CurrencyFormat
-                thousandSeparator={product.prices.currency_thousand_separator}
-                decimalSeparator={product.prices.currency_decimal_separator}
-                prefix={product.prices.currency_prefix}
-                suffix={product.prices.currency_suffix}
-                value={(product.prices.price / 100) * product.cartQuantity}
+                thousandSeparator={prices.currency_thousand_separator}
+                decimalSeparator={prices.currency_decimal_separator}
+                prefix={prices.currency_prefix}
+                suffix={prices.currency_suffix}
+                value={(1000) * product.cartQuantity}
                 displayType="text"
               />{" "}
               {/* Ksh. {(product.prices.price / 100) * product.cartQuantity} */}

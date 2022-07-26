@@ -73,7 +73,7 @@ export const cartSlice = createSlice({
     calculateCartTotal: (state, action) => {
      const { quantity, total } = state.cartItems.reduce(
        (rollingTotal, item) => {
-         rollingTotal.total += item.prices.price * item.cartQuantity;
+         rollingTotal.total += 100
          rollingTotal.quantity += item.cartQuantity;
 
          return rollingTotal;

@@ -13,24 +13,24 @@ import Confirmation from "./pages/Confirmation";
 import SignUp from "./pages/SignUp";
 import Thankyou from "./pages/Thankyou";
 import { useDispatch, useSelector } from "react-redux";
-import { calculateCartTotal } from "./slices/cartSlice";
-// import { selectUser, setUser } from "./slices/authSlice";
+import { calculateCartTotal, selectCartItems } from "./slices/cartSlice";
+import { selectCurrentUser, setCredentials } from "./slices/authSlice";
 
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 function App() {
-  const cart = useSelector(calculateCartTotal);
-  // const user = useSelector(selectUser)
+  const cart = useSelector(selectCartItems);
+  const user = useSelector(selectCurrentUser);
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
     dispatch(calculateCartTotal());
   }, [cart, dispatch]);
 
   //  useEffect(() => {
-  //    dispatch(setUser({username: 'Reactex', password: 'reactex'}));
+  //    dispatch(setCredentials({username: 'Reactex', password: 'reactex'}));
   //  }, [user, dispatch]);
-  
+
   return (
     <>
       <Header />
@@ -66,7 +66,7 @@ function App() {
                 </Route>
               </Route>
             </Route>
-            <Route path="product/:sku" element={<SingleProduct />} />
+            <Route path="product/:id" element={<SingleProduct />} />
           </Route>
         </Route>
         <Route path="*" element={<NotFound />} />

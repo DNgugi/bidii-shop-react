@@ -1,22 +1,23 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { Select, TextInput } from "./Fields";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { counties } from "../../api";
-import { prices } from "../../api";
+import { counties } from "../../features/api/api";
+import { prices } from "../../features/api/api";
 import CurrencyFormat from "react-currency-format";
 import { useSelector } from "react-redux";
 import { selectCartItems, selectCartTotal } from "../../slices/cartSlice";
+import { selectCurrentUser } from "../../slices/authSlice";
+import { useCreateOrderMutation } from "../../features/api/authApi";
 
 const BillingForm = () => {
   const navigate = useNavigate();
   const cartItems = useSelector(selectCartItems);
   const cartTotal = useSelector(selectCartTotal);
-  const handlePlaceOrder = () => {
-    alert("submitted");
-  };
+  const [createOrder] = useCreateOrderMutation()
+  const user = useSelector(selectCurrentUser);
 
   return (
     <div className="billing-form col-span-full p-4">
@@ -27,7 +28,7 @@ const BillingForm = () => {
           lastName: "",
           mobile: "",
           email: "",
-          address: {},
+          address: "",
         }}
         validationSchema={Yup.object({
           firstName: Yup.string()
@@ -44,13 +45,28 @@ const BillingForm = () => {
             .required("Required"),
           location: Yup.string().required("Please select a county!"),
         })}
-        onSubmit={(values, { setSubmitting }) => {
-          setTimeout(() => {
-            toast("Check your phone!");
-            console.log(cartItems);
+        onSubmit={async (values, { setSubmitting }) => {
+          toast("Check your phone!");
+          try {
+            const newOrder = await createOrder({
+              customerId: user.id,
+              customerNote: 'Default User note',
+              isPaid: false,
+              lineItems: [{
+                total: "1000"
+              }],
+              shipping: {
+                address1: values.address
+              },
+              status: "PENDING",
+            }).unwrap();
+            // console.log(newOrder);
             setSubmitting(false);
             navigate("confirmation");
-          }, 400);
+          } catch (err) {
+            console.log("Error in billing form:", err);
+          }
+          // console.log(cartItems);
         }}
       >
         <Form className="billing-actual-form grid grid-cols-12 p-2 gap-4">
@@ -84,14 +100,15 @@ const BillingForm = () => {
             />
             <Select label="Delivery County" name="location">
               <>
-                <option
-                  value=""
-                  label="Tap to select..."
-                >
+                <option value="" label="Tap to select...">
                   Tap to select..
                 </option>
                 {counties.map((county) => (
-                  <option value={county.name} label={county.name}>
+                  <option
+                    key={county.code}
+                    value={county.name}
+                    label={county.name}
+                  >
                     {county.name}
                   </option>
                 ))}

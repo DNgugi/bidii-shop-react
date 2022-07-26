@@ -1,51 +1,60 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import { TextInput } from "./Fields";
 import { Link, useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setUser } from "../../slices/authSlice";
-
+import { useDispatch, useSelector } from "react-redux";
+import { selectRefreshToken, setCredentials } from "../../slices/authSlice";
+import { useLoginUserMutation } from "../../features/api/authApi";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  return (
-    <>
+  const refreshToken = useSelector(selectRefreshToken);
+  const [loginUser, {isLoading}] = useLoginUserMutation();
+  const content = isLoading ? (<p>Logging you in...</p>)
+    : (<>
       <Formik
         initialValues={{
           password: "",
-          email: "",
-          // acceptedTerms: false, // added for our checkbox
-          // jobType: "", // added for our select
+          username: "",
         }}
         validationSchema={Yup.object({
           password: Yup.string()
             .min(8, "Must be 8 characters or more")
-            .max(16, "Must be 16 characters or less")
+            .max(36, "Must be 16 characters or less")
             .required("Required"),
-          email: Yup.string()
-            .email("Invalid email address")
+          username: Yup.string()
+            .min(2, "Invalid username")
             .required("Required"),
         })}
-        onSubmit={(values, { setSubmitting }) => {
-          dispatch(setUser({
-            user: {
-              ...values,
-            isLoggedIn: true
-            },
-            token: 'sample-token'
-          }));
-          setSubmitting(false);
-          navigate(-1)
+        onSubmit={async (values, { setSubmitting }) => {
+          try {
+            const newUser = await loginUser({
+              username: values.username,
+              password: values.password,
+            }).unwrap();
+            dispatch(
+              setCredentials({
+                user: { id: newUser.id },
+                token: newUser.authToken,
+                refreshToken: refreshToken
+              })
+            );
+            setSubmitting(false);
+            navigate("/shop");
+          } catch (err) {
+            // alert(err.res.errors.message)
+            console.log(err.message);
+          }
         }}
       >
         <Form className="w-full max-w-sm">
           <TextInput
-            label="Email"
-            name="email"
-            type="email"
-            placeholder="jane@formik.com"
+            label="Username"
+            name="username"
+            type="text"
+            // placeholder="jane@formik.com"
           />
           <TextInput label="Password" name="password" type="password" />
 
@@ -63,8 +72,8 @@ const LoginForm = () => {
           </div>
         </Form>
       </Formik>
-    </>
-  );
+    </>)
+  return content;
 };
 
 export default LoginForm;

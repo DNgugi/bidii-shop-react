@@ -5,7 +5,7 @@ import { selectCartItemCount } from "../slices/cartSlice";
 import Nav from "./Nav";
 
 function Header() {
-  const cartItems = useSelector(selectCartItemCount);
+  const cartItemCount = useSelector(selectCartItemCount);
 
   return (
     <header className="fixed z-20 top-0 right-0 left-0 grid grid-cols-12 items-center bg-mainGold px-4 h-20">
@@ -35,7 +35,7 @@ function Header() {
             <i className="fa fa-shopping-bag">
             </i>
             <span className="count text-sm  absolute -top-2 right-2">
-              ({cartItems})
+              ({cartItemCount})
             </span>
           </button>
         </Link>

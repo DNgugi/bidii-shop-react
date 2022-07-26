@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { selectCartTotal } from "../slices/cartSlice";
 import CurrencyFormat from "react-currency-format";
-import { prices } from "../api";
+import { prices } from "../features/api/api";
 function CartSummary() {
   const cartTotal = useSelector(selectCartTotal);
   const navigate = useNavigate();
