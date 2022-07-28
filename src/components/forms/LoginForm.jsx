@@ -4,16 +4,17 @@ import * as Yup from "yup";
 import { TextInput } from "./Fields";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { selectRefreshToken, setCredentials } from "../../slices/authSlice";
+import { setCredentials } from "../../slices/authSlice";
 import { useLoginUserMutation } from "../../features/api/authApi";
 
 const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const refreshToken = useSelector(selectRefreshToken);
-  const [loginUser, {isLoading}] = useLoginUserMutation();
-  const content = isLoading ? (<p>Logging you in...</p>)
-    : (<>
+  const [loginUser, { isLoading }] = useLoginUserMutation();
+  const content = isLoading ? (
+    <p>Logging you in...</p>
+  ) : (
+    <>
       <Formik
         initialValues={{
           password: "",
@@ -24,9 +25,7 @@ const LoginForm = () => {
             .min(8, "Must be 8 characters or more")
             .max(36, "Must be 16 characters or less")
             .required("Required"),
-          username: Yup.string()
-            .min(2, "Invalid username")
-            .required("Required"),
+          username: Yup.string().required("Required"),
         })}
         onSubmit={async (values, { setSubmitting }) => {
           try {
@@ -34,28 +33,23 @@ const LoginForm = () => {
               username: values.username,
               password: values.password,
             }).unwrap();
-            dispatch(
-              setCredentials({
-                user: { id: newUser.id },
-                token: newUser.authToken,
-                refreshToken: refreshToken
-              })
-            );
+          
+            // dispatch(
+            //   setCredentials({
+            //     user: newUser.user,
+            //     token: newUser.authToken,
+            //   })
+            // );
+            alert("logged in!");
             setSubmitting(false);
-            navigate("/shop");
+            // navigate("/shop");
           } catch (err) {
-            // alert(err.res.errors.message)
             console.log(err.message);
           }
         }}
       >
         <Form className="w-full max-w-sm">
-          <TextInput
-            label="Username"
-            name="username"
-            type="text"
-            // placeholder="jane@formik.com"
-          />
+          <TextInput label="Username/Email" name="username" type="text" />
           <TextInput label="Password" name="password" type="password" />
 
           <div className="flex justify-between items-center w-full">
@@ -72,7 +66,8 @@ const LoginForm = () => {
           </div>
         </Form>
       </Formik>
-    </>)
+    </>
+  );
   return content;
 };
 

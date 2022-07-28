@@ -8,18 +8,12 @@ export const authApiSlice = apiSlice.injectEndpoints({
       query: (regData) => ({
         method: "POST",
         document: gql`
-          mutation registerUser(
-            $username: String!
-            $email: String!
-            $password: String!
-          ) {
-            registerUser(
-              input: { username: $username, password: $password, email: $email }
-            ) {
+          mutation RegisterUser($username: String!, $email: String!) {
+            registerUser(input: { username: $username, email: $email }) {
               user {
-                id
-                jwtAuthToken
-                jwtRefreshToken
+                databaseId
+                username
+                email
               }
             }
           }
@@ -27,11 +21,11 @@ export const authApiSlice = apiSlice.injectEndpoints({
         variables: {
           username: regData.username,
           email: regData.email,
-          password: regData.username,
         },
       }),
       transformResponse: (responseData) => responseData.registerUser.user,
     }),
+
     //Login User
     loginUser: builder.mutation({
       query: (loginData) => ({
@@ -41,8 +35,9 @@ export const authApiSlice = apiSlice.injectEndpoints({
             login(input: { username: $username, password: $password }) {
               authToken
               user {
-                id
+                databaseId
                 name
+                email
               }
             }
           }
@@ -52,7 +47,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
           password: loginData.password,
         },
       }),
-      transformResponse: (responseData) => responseData.login,
+      transformResponse: (responseData, meta) => {
+        console.log(meta)
+        return responseData
+      },
     }),
     //Refresh Token
     refreshToken: builder.mutation({
@@ -202,9 +200,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
                 status: $status
               }
             ) {
-              order {
-                id
-              }
+              orderId
             }
           }
         `,
@@ -218,7 +214,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
         },
       }),
       transformResponse: (responseData) => {
-        return responseData.order.id;
+        return responseData;
       },
     }),
   }),
@@ -229,5 +225,5 @@ export const {
   useRegisterUserMutation,
   useGetProductQuery,
   useLoginUserMutation,
-  useCreateOrderMutation
+  useCreateOrderMutation,
 } = authApiSlice;

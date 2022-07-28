@@ -49,7 +49,7 @@ const BillingForm = () => {
           toast("Check your phone!");
           try {
             const newOrder = await createOrder({
-              customerId: user.id,
+              customerId: user.databaseId,
               customerNote: 'Default User note',
               isPaid: false,
               lineItems: [{
@@ -60,13 +60,13 @@ const BillingForm = () => {
               },
               status: "PENDING",
             }).unwrap();
-            // console.log(newOrder);
+            
+            console.log(newOrder);
             setSubmitting(false);
             navigate("confirmation");
           } catch (err) {
             console.log("Error in billing form:", err);
           }
-          // console.log(cartItems);
         }}
       >
         <Form className="billing-actual-form grid grid-cols-12 p-2 gap-4">

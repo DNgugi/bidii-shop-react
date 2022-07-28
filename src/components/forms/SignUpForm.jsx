@@ -19,17 +19,13 @@ const SignUpForm = () => {
       <Formik
         initialValues={{
           username: "",
-          password: "",
-          email: "",
+          email: ""
         }}
         validationSchema={Yup.object({
           username: Yup.string()
             .max(15, "Must be 15 characters or less")
             .required("Required"),
-          password: Yup.string()
-            .min(8, "Must be 8 characters or more")
-            .max(16, "Must be 16 characters or less")
-            .required("Required"),
+        
           email: Yup.string()
             .email("Please enter a valid email address")
             .required("Required"),
@@ -39,35 +35,34 @@ const SignUpForm = () => {
             const newUser = await registerUser({
               username: values.username,
               email: values.email,
-              password: values.password,
             }).unwrap();
-            console.log(newUser);
-            dispatch(
-              setCredentials({
-                user: {
-                  id: newUser.id,
-                },
-                token: newUser.jwtAuthToken,
-                refreshToken: newUser.jwtRefreshToken,
-              })
-            );
-            
+            // dispatch(
+            //   setCredentials({
+            //     user: {
+            //       id: newUser.id,
+            //     },
+            //     token: newUser.jwtAuthToken,
+            //     refreshToken: newUser.jwtRefreshToken,
+            //   })
+            // );
+
             setSubmitting(false);
-            toast.success(`You were registered successfully`, {
-              position: "top-center",
-            });
-                      navigate("/login");
+            toast.success(
+              `Success! We have emailed you a link to set up your password.`,
+              {
+                position: "top-center",
+              }
+            );
+            navigate("/login");
           } catch (err) {
-            alert('there was an error signing you up')
+            alert("there was an error signing you up");
             console.log(err.message);
           }
         }}
       >
         <Form className="w-full max-w-sm">
+          <TextInput label="Email" name="email" type="email" />
           <TextInput label="Username" name="username" type="text" />
-
-          <TextInput label="Email Address" name="email" type="email" />
-          <TextInput label="Password" name="password" type="password" />
 
           <div className="flex justify-between items-center w-full">
             <button className="btn-primary " type="submit">
