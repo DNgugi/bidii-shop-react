@@ -1,54 +1,30 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 // Define our single API slice object
+import { request, gql, ClientError } from "graphql-request";
 
 import { graphqlRequestBaseQuery } from "@rtk-query/graphql-request-base-query";
 
-const apiBaseQuery = graphqlRequestBaseQuery({
-  url: "https://karyhealthproducts.com/graphql",
-  credentials: "include",
-
-  prepareHeaders: (headers, { getState }) => {
-    headers.set("Content-Type", "application/json");
-    // const session = sessionStorage.getItem("woo-session");
-    // if (session) {
-    //   headers.set("woocommerce-session", `Session ${session}`);
-    // }
-    const token = getState().auth.token;
-    if (token) {
-      headers.set("authorization", `Bearer ${token}`);
+// const apiBaseQuery = () => {
+  
+// }
+const graphqlBaseQuery =
+  ({ baseUrl }) =>
+  async ({ body }) => {
+    try {
+      const result = await request(baseUrl, body);
+      return { data: result };
+    } catch (error) {
+      if (error) {
+        return { error: { data: error } };
+      }
+      return { error: { status: 500, data: error } };
     }
-    return headers;
-  },
-});
-const apiBaseQueryWithReauth = async (args, api, extraOptions) => {
-  let result = await apiBaseQuery(args, api, extraOptions);
-
-  if (
-    result?.error?.orginalStatus === 403 ||
-    result?.error?.orginalStatus === 401
-  ) {
-    console.log("sending refresh token");
-    const refreshResult = await apiBaseQuery(
-      api.refreshToken(api.getState().auth.refreshToken),
-      api,
-      extraOptions
-    );
-
-    console.log(refreshResult);
-    if (refreshResult?.data) {
-      const user = api.getState().auth;
-      api.dispatch(api.setCredentials({ ...refreshResult.data, user }));
-      result = await apiBaseQuery(args, api, extraOptions);
-    } else {
-      api.dispatch(api.logout());
-    }
-  }
-  return { data: result, meta: result.meta };
-};
-
+  };
 export const apiSlice = createApi({
   // reducerPath: "apiSlice",
-  baseQuery: apiBaseQueryWithReauth,
+  baseQuery: graphqlBaseQuery({
+    baseUrl: "https://karyhealthproducts.com/graphql",
+  }),
   endpoints: (builder) => ({}),
 });
 

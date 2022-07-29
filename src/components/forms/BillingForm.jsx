@@ -11,12 +11,17 @@ import { useSelector } from "react-redux";
 import { selectCartItems, selectCartTotal } from "../../slices/cartSlice";
 import { selectCurrentUser } from "../../slices/authSlice";
 import { useCreateOrderMutation } from "../../features/api/authApi";
+import { ADD_CART_ITEMS, CHECKOUT } from "../../features/api/queries";
+import { useMutation } from "@apollo/client";
 
 const BillingForm = () => {
   const navigate = useNavigate();
   const cartItems = useSelector(selectCartItems);
   const cartTotal = useSelector(selectCartTotal);
-  const [createOrder] = useCreateOrderMutation()
+  // const [createOrder] = useCreateOrderMutation()
+  const [checkout] = useMutation(CHECKOUT);
+  const [addCartItems] = useMutation(ADD_CART_ITEMS);
+
   const user = useSelector(selectCurrentUser);
 
   return (
@@ -46,27 +51,39 @@ const BillingForm = () => {
           location: Yup.string().required("Please select a county!"),
         })}
         onSubmit={async (values, { setSubmitting }) => {
-          toast("Check your phone!");
           try {
-            const newOrder = await createOrder({
-              customerId: user.databaseId,
-              customerNote: 'Default User note',
-              isPaid: false,
-              lineItems: [{
-                total: "1000"
-              }],
-              shipping: {
-                address1: values.address
+            const wcCart = await addCartItems({
+              variables: {
+                items: [
+                  {
+                    productId: 72,
+                    quantity: 1,
+                  },
+                ],
               },
-              status: "PENDING",
-            }).unwrap();
-            
+            });
+            console.log(wcCart);
+            const newOrder = await checkout({
+              variables: {
+                shippingMethod: [values.location],
+                paymentMethod: "cod",
+                billing: {
+                  firstName: values.firstName,
+                  lastName: values.lastName,
+                  address1: values.location,
+                  email: values.email,
+                },
+              },
+            });
+            toast("Check your phone!");
+
             console.log(newOrder);
             setSubmitting(false);
-            navigate("confirmation");
+            // navigate("confirmation");
           } catch (err) {
             console.log("Error in billing form:", err);
           }
+          toast("order submitted!");
         }}
       >
         <Form className="billing-actual-form grid grid-cols-12 p-2 gap-4">

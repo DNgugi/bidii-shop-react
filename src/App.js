@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { calculateCartTotal, selectCartItems } from "./slices/cartSlice";
 import { selectCurrentUser, setCredentials } from "./slices/authSlice";
 
+
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
 function App() {

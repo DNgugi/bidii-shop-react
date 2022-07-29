@@ -5,13 +5,17 @@ import { TextInput } from "./Fields";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { setCredentials } from "../../slices/authSlice";
-import { useLoginUserMutation } from "../../features/api/authApi";
+// import { useLoginUserMutation } from "../../features/api/authApi";
+import { useMutation } from "@apollo/client";
 
+import { LOGIN_USER } from "../../features/api/queries";
 const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [loginUser, { isLoading }] = useLoginUserMutation();
-  const content = isLoading ? (
+  // const [loginUser, { isLoading }] = useLoginUserMutation();
+  const [loginUser, { data, loading, error }] = useMutation(LOGIN_USER);
+
+  const content = loading ? (
     <p>Logging you in...</p>
   ) : (
     <>
@@ -30,16 +34,20 @@ const LoginForm = () => {
         onSubmit={async (values, { setSubmitting }) => {
           try {
             const newUser = await loginUser({
-              username: values.username,
-              password: values.password,
-            }).unwrap();
-          
-            // dispatch(
-            //   setCredentials({
-            //     user: newUser.user,
-            //     token: newUser.authToken,
-            //   })
-            // );
+              variables: {
+                username: values.username,
+                password: values.password,
+              },
+            });
+            console.log(newUser.data.login);
+
+            dispatch(
+              setCredentials({
+                user: newUser.data.login.user,
+                token: newUser.data.login.user.jwtAuthToken,
+                refreshToken: newUser.data.login.jwtRefreshToken,
+              })
+            );
             alert("logged in!");
             setSubmitting(false);
             // navigate("/shop");

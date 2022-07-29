@@ -17,7 +17,7 @@ function Checkout() {
       <h1 className="text-2xl col-span-full text-center">Checkout</h1>
       {cartItems === 0 ? (
         <div className="empty-cart col-span-full w-screen flex flex-col items-center justify-center">
-          <p className="text-2xl text-center">Oops! This cart is empty...</p>
+          <p className="text-2xl text-center">Restoring cart...</p>
           <button
             className="btn-primary mt-5"
             onClick={() => navigate("/shop")}

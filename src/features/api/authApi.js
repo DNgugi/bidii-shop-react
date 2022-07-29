@@ -48,7 +48,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
         },
       }),
       transformResponse: (responseData, meta) => {
-        console.log(meta)
+        console.log(responseData)
         return responseData
       },
     }),

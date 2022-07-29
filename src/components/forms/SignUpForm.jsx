@@ -6,13 +6,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setCredentials } from "../../slices/authSlice";
 import { toast } from "react-toastify";
+import { useMutation } from "@apollo/client";
+import { REGISTER_USER } from "../../features/api/queries";
 
-import { useRegisterUserMutation } from "../../features/api/authApi";
+// import { useRegisterUserMutation } from "../../features/api/authApi";
 
 const SignUpForm = () => {
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
   let navigate = useNavigate();
-  const [registerUser] = useRegisterUserMutation();
+  const [registerUser, {data, loading, error}] = useMutation(REGISTER_USER)
 
   return (
     <>
@@ -33,9 +35,12 @@ const SignUpForm = () => {
         onSubmit={async (values, { setSubmitting }) => {
           try {
             const newUser = await registerUser({
-              username: values.username,
-              email: values.email,
-            }).unwrap();
+              variables: {
+                username: values.username,
+                email: values.email,
+              },
+            });
+            console.log(newUser)
             // dispatch(
             //   setCredentials({
             //     user: {
@@ -47,17 +52,17 @@ const SignUpForm = () => {
             // );
 
             setSubmitting(false);
-            toast.success(
-              `Success! We have emailed you a link to set up your password.`,
-              {
-                position: "top-center",
-              }
-            );
-            navigate("/login");
           } catch (err) {
             alert("there was an error signing you up");
             console.log(err.message);
           }
+          toast.success(
+            `Success! We have emailed you a link to set up your password.`,
+            {
+              position: "top-center",
+            }
+          );
+          navigate("/login");
         }}
       >
         <Form className="w-full max-w-sm">

@@ -1,5 +1,7 @@
 import React, { useEffect } from "react";
 import { useGetAllProductsQuery } from "../features/api/authApi";
+import { useQuery } from "@apollo/client";
+import { GET_ALL_PRODUCTS } from "../features/api/queries";
 import Products from "../components/Products";
 import ShopSidebar from "../components/ShopSidebar";
 import Footer from "../components/Footer";
@@ -28,8 +30,8 @@ function Shop() {
     dispatch(calculateCartTotal());
   }, [cart, dispatch]);
   
-  const { data: products, error, isLoading } = useGetAllProductsQuery();
-  
+    const { loading, error, data } = useQuery(GET_ALL_PRODUCTS);
+
 
   return (
     <main
@@ -54,12 +56,12 @@ function Shop() {
         id="shop"
         className="col-span-full sm:col-span-8 md:col-span-9 overflow-y-scroll grid grid-cols-12 min-h-screen p-4"
       >
-        {isLoading ? (
+        {loading ? (
           <p>Loading...</p>
         ) : error ? (
           <p>An error occured, please try again</p>
         ) : (
-          <Products products={products} />
+          <Products products={data.products.edges} />
         )}
       </div>
       <Footer />

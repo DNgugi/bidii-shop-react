@@ -8,8 +8,8 @@ import reportWebVitals from "./reportWebVitals";
 import { BrowserRouter } from "react-router-dom";
 import { ToastContainer } from 'react-toastify';
   import "react-toastify/dist/ReactToastify.css";
-// import { ApiProvider } from '@reduxjs/toolkit/query/react';
-// import { apiSlice } from './features/api/api';
+import { client } from './features/api/apolloApi'
+import { ApolloProvider } from "@apollo/client";
 
 const container = document.getElementById("root");
 const root = createRoot(container);
@@ -17,10 +17,13 @@ const root = createRoot(container);
 root.render(
   <React.StrictMode>
     <Provider store={store}>
+        <ApolloProvider client={client}>
+
       <BrowserRouter>
         <ToastContainer />
         <App />
-      </BrowserRouter>
+        </BrowserRouter>
+        </ApolloProvider>
     </Provider>
   </React.StrictMode>
 );
